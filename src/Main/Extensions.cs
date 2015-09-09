@@ -59,5 +59,27 @@ namespace SeleniumExtensions.Main
                 return false;
             }
         }
+
+        public static void WaitAndClick(
+            this IWebDriver I,
+            By selector)
+        {
+            I.Wait().Until(d => d.FindElements(selector).Any());
+            I.FindElement(selector).TryClick();
+        }
+
+        public static bool TryClick(
+            this IWebElement element)
+        {
+            try
+            {
+                element.Click();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }
