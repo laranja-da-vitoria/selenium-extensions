@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 
 namespace SeleniumExtensions.Main
@@ -22,16 +22,16 @@ namespace SeleniumExtensions.Main
             return wait;
         }
 
-        public static void WaitUntilAjaxIsRunning(this IWebDriver I, bool pageHasJquery = true)
+        public static void WaitUntilAjaxIsRunning(this IWebDriver driver, bool pageHasJquery = true)
         {
             while (true)
             {
                 var ajaxIsComplete = false;
 
                 if (pageHasJquery)
-                    ajaxIsComplete = (bool)(I as IJavaScriptExecutor).ExecuteScript("if (!window.jQuery) { return false; } else { return jQuery.active == 0; }");
+                    ajaxIsComplete = (bool)(driver as IJavaScriptExecutor).ExecuteScript("if (!window.jQuery) { return false; } else { return jQuery.active == 0; }");
                 else
-                    ajaxIsComplete = (bool)(I as IJavaScriptExecutor).ExecuteScript("return document.readyState == 'complete'");
+                    ajaxIsComplete = (bool)(driver as IJavaScriptExecutor).ExecuteScript("return document.readyState == 'complete'");
 
                 if (ajaxIsComplete)
                     break;
@@ -47,6 +47,21 @@ namespace SeleniumExtensions.Main
             I.Wait().Until(d => d.FindElements(selector).ElementIsAttached());
         }
 
+        public static bool SwitchToWindow(this IWebDriver driver, Expression<Func<IWebDriver, bool>> predicateExp)
+        {
+            var predicate = predicateExp.Compile();
+            foreach (var handle in driver.WindowHandles)
+            {
+                driver.SwitchTo().Window(handle);
+                if (predicate(driver))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private static bool ElementIsAttached(this ICollection<IWebElement> elements)
         {
             try
@@ -60,12 +75,10 @@ namespace SeleniumExtensions.Main
             }
         }
 
-        public static void WaitAndClick(
-            this IWebDriver I,
-            By selector)
+        public static void WaitAndClick(this IWebDriver driver, By selector)
         {
-            I.Wait().Until(d => d.FindElements(selector).Any());
-            I.FindElement(selector).TryClick();
+            driver.Wait().Until(d => d.FindElements(selector).Any());
+            driver.FindElement(selector).TryClick();
         }
 
         public static bool TryClick(
