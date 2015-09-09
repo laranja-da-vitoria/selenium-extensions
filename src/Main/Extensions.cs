@@ -81,5 +81,10 @@ namespace SeleniumExtensions.Main
                 return false;
             }
         }
+
+        public static IWebElement GetParent(this IWebElement e)
+        {
+            return e.FindElement(By.XPath(".."));
+        }
     }
 }
