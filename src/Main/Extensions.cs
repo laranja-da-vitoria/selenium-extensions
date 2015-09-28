@@ -18,8 +18,7 @@ namespace SeleniumExtensions.Main
 
         public static WebDriverWait Wait(this IWebDriver driver, int timeout = 60)
         {
-            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeout));
-            return wait;
+            return new WebDriverWait(driver, TimeSpan.FromSeconds(timeout));
         }
 
         public static void WaitUntilAjaxIsRunning(this IWebDriver driver, bool pageHasJquery = true)
@@ -98,6 +97,25 @@ namespace SeleniumExtensions.Main
         public static IWebElement GetParent(this IWebElement e)
         {
             return e.FindElement(By.XPath(".."));
+        }
+
+        public static void ScrollTo(
+            this IWebDriver I,
+            IWebElement element)
+        {
+            var yPosition = element.Location.Y - 100;
+            var js = (IJavaScriptExecutor)I;
+
+            js.ExecuteScript(string.Format("window.scrollTo(0, {0})", yPosition));
+        }
+
+        public static void ScrollAndClick(
+            this IWebDriver I,
+            IWebElement element)
+        {
+            ScrollTo(I, element);
+
+            I.Wait().Until(d => element.TryClick());
         }
     }
 }
