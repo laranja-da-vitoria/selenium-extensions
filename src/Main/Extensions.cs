@@ -117,5 +117,14 @@ namespace SeleniumExtensions.Main
 
             I.Wait().Until(d => element.TryClick());
         }
+
+        public static void Hover(
+            this IWebDriver driver,
+            IWebElement element)
+        {
+            var actions = new Actions(driver);
+            actions.MoveToElement(element);
+            actions.Perform();
+        }
     }
 }
