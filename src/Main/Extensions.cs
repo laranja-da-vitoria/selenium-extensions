@@ -127,5 +127,18 @@ namespace SeleniumExtensions.Main
             actions.MoveToElement(element);
             actions.Perform();
         }
+
+        public static string GetCurrentUri(
+            this IWebDriver driver)
+        {
+            return driver.Url;
+        }
+
+        public static SelectElement DropDownList(
+            this IWebDriver I,
+            By selector)
+        {
+            return new SelectElement(I.FindElement(selector));
+        }
     }
 }
